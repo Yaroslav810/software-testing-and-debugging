@@ -4,7 +4,8 @@
     "target": "es6",
     "sourceMap": true,
     "rootDir": "lw",
-    "outFile": "./dist/build.js"
+    "outFile": "./dist/build.js",
+    "esModuleInterop": true
   },
   "exclude": [
     "node_modules"

@@ -1,0 +1,19 @@
+3 4 5 ordinary
+5 4 3 ordinary
+4 3 5 ordinary
+
+3 4 4 isosceles
+4 4 3 isosceles
+4 3 4 isosceles
+
+4 4 4 equilateral
+
+1 2 3 not_triangle
+0 0 0 not_triangle
+1 2 0 not_triangle
+-1 -1 -1 not_triangle
+3 3 -3 not_triangle
+
+0.1 0.2 0.3 not_triangle
+0.0000000000000001 0.0000000000000001 0.0000000000000001 equilateral
+999999999999 999999999999 999999999999 equilateral
