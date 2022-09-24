@@ -12,6 +12,8 @@ type TriangleType = 'ordinary'   // Обычный
     | 'not_triangle'             // Не треугольник
     | 'unknown_error'            // Неизвестная ошибка
 
+const TYPES = ['ordinary', 'isosceles', 'equilateral', 'not_triangle', 'unknown_error']
+
 function strip(n: number): number {
     return parseFloat(n.toPrecision(PRECISION))
 }
@@ -20,16 +22,36 @@ function sum(a: number, b: number): number {
     return strip(a + b)
 }
 
-function getInputData(): InputData {
-    const [, , a, b, c] = process.argv
+function getInputData(data: string[]): (InputData | 'unknown_error') {
+    if (data.length !== 3) {
+        return 'unknown_error'
+    }
+    const [_a, _b, _c] = data
+    const [a, b, c] = [_a, _b, _c].map(parseFloat)
+    const checkA = Number.isNaN(a) ? false : a
+    const checkB = Number.isNaN(b) ? false : b
+    const checkC = Number.isNaN(c) ? false : c
+    if (checkA === false || checkB === false || checkC === false) {
+        return 'unknown_error'
+    }
     return {
-        a: Number(a) || 0,
-        b: Number(b) || 0,
-        c: Number(c) || 0,
+        a,
+        b,
+        c,
     }
 }
 
-function determineTypeOfTriangle(data: InputData): TriangleType {
+function checkBoundaryValues(data: InputData): boolean {
+    const result = Object.values(data).filter(item =>
+        item === Number.POSITIVE_INFINITY || item === Number.NEGATIVE_INFINITY)
+
+    return !result.length
+}
+
+function determineTypeOfTriangle(data: InputData | 'unknown_error'): TriangleType {
+    if (data === 'unknown_error' || !checkBoundaryValues(data)) {
+        return 'unknown_error'
+    }
     const dataAsc = Object.values(data).sort((a, b) => b - a)
     const [_a, _b, _c] = dataAsc
     const [a, b, c] = [strip(_a), strip(_b), strip(_c)]
@@ -60,13 +82,15 @@ function getTriangleTypeText(type: TriangleType) {
         case "not_triangle":
             return 'Не треугольник'
         case "unknown_error":
-            return "Ошибка типа"
+            return "Неизвестная ошибка"
         default:
             throw new Error()
     }
 }
 
 export {
+    TYPES,
+
     InputData,
     TriangleType,
 
