@@ -18,10 +18,6 @@ function strip(n: number): number {
     return parseFloat(n.toPrecision(PRECISION))
 }
 
-function sum(a: number, b: number): number {
-    return strip(a + b)
-}
-
 function getInputData(data: string[]): (InputData | 'unknown_error') {
     if (data.length !== 3) {
         return 'unknown_error'
@@ -56,7 +52,7 @@ function determineTypeOfTriangle(data: InputData | 'unknown_error'): TriangleTyp
     const [_a, _b, _c] = dataAsc
     const [a, b, c] = [strip(_a), strip(_b), strip(_c)]
 
-    if (a >= sum(b, c)) {
+    if (strip(a - b) >= c) {
         return 'not_triangle'
     }
 
