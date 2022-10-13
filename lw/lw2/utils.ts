@@ -17,19 +17,22 @@ type Links = {
     invalid: Set<Link>,
 }
 
-async function makeRequest(url: string): Promise<Response> {
+async function makeRequest(url: string): Promise<Response | null> {
     try {
         const data = await axios.get(url)
         return {
             status: data.status,
             body: data.data,
         }
-    }
-    catch (error) {
-        return {
-            status: error.response.status,
-            body: '',
+    } catch (error) {
+        if (error.response.status) {
+            return {
+                status: error.response.status,
+                body: '',
+            }
         }
+
+        return null
     }
 }
 

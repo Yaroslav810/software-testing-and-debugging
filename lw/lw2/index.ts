@@ -32,6 +32,9 @@ async function countBrokenLinks(url: string, links: Links) {
         return
     }
     const response = await makeRequest(url)
+    if (!response) {
+        return
+    }
     if (response.status >= 400) {
         links.invalid.add({
             link: url,
