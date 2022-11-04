@@ -1,7 +1,27 @@
-import {Canvas} from "./canvas";
+import {Canvas} from "./canvas"
+import {Storage} from "./storage"
+import {Figure} from "./figure"
 
-function createCanvasCreated(background?: string) {
-    return () => createCanvas(background)
+function createMockStorage(figures: Figure[], figuresForGet?: Figure[]) {
+    let count = figures.length
+    return {
+        add: jest.fn(() => {
+            count++
+        }),
+        remove: jest.fn(() => {
+            count--
+        }),
+        get: jest.fn(() => figuresForGet.shift()),
+        getAll: jest.fn(() => figures),
+        getCount: jest.fn(() => count),
+        clear: jest.fn(() => {
+            count = 0
+        })
+    }
+}
+
+function createCanvasCreated(storage: Storage, background?: string) {
+    return () => createCanvas(storage, background)
 }
 
 function createRectangle(figure) {
@@ -46,36 +66,39 @@ function createFigure(type: 'rectangle' | 'circle' | 'triangle') {
     }
 }
 
-function createCanvas(background?: string, figures?: ('rectangle' | 'circle' | 'triangle')[]) {
-    const canvas = background
-        ? new Canvas(background)
-        : new Canvas()
-    if (figures) {
-        figures.forEach(figure => canvas.addFigure(createFigure(figure)))
-    }
-    return canvas
+function createFigures(figures: ('rectangle' | 'circle' | 'triangle')[]) {
+    return figures.map(createFigure)
+}
+
+function createCanvas(storage: Storage, background?: string) {
+    return background
+        ? new Canvas(storage, background)
+        : new Canvas(storage)
 }
 
 describe('Тестирование canvas', () => {
 
     it('Дефолтная инициализация canvas', () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage(createFigures([]))
+        const canvas = createCanvas(storage)
 
         expect(canvas.getBackground()).toBe('#FFFFFF')
         expect(canvas.getFigureCount()).toBe(0)
     })
 
     it(`Валидная установка background через конструктор`, () => {
-        const canvas1 = createCanvas('#C0C0C0')
-        const canvas2 = createCanvas('#FFF')
+        const storage = createMockStorage(createFigures([]))
+        const canvas1 = createCanvas(storage, '#C0C0C0')
+        const canvas2 = createCanvas(storage, '#FFF')
 
         expect(canvas1.getBackground()).toBe('#C0C0C0')
         expect(canvas2.getBackground()).toBe('#FFF')
     })
 
     it(`Валидная установка background через функцию`, () => {
-        const canvas1 = createCanvas()
-        const canvas2 = createCanvas()
+        const storage = createMockStorage(createFigures([]))
+        const canvas1 = createCanvas(storage)
+        const canvas2 = createCanvas(storage)
 
         canvas1.setBackground('#C0C0C0')
         canvas2.setBackground('#FFF')
@@ -85,14 +108,17 @@ describe('Тестирование canvas', () => {
     })
 
     it(`Невалидная установка background через конструктор`, () => {
+        const storage = createMockStorage(createFigures([]))
         const error = 'Invalid color'
-        expect(createCanvasCreated('#C0C0C00')).toThrow(error)
-        expect(createCanvasCreated('#FF')).toThrow(error)
-        expect(createCanvasCreated('bus')).toThrow(error)
+
+        expect(createCanvasCreated(storage, '#C0C0C00')).toThrow(error)
+        expect(createCanvasCreated(storage, '#FF')).toThrow(error)
+        expect(createCanvasCreated(storage, 'bus')).toThrow(error)
     })
 
     it(`Невалидная установка background через функцию`, () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage(createFigures([]))
+        const canvas = createCanvas(storage)
 
         const background1 = canvas.setBackground('#C0C0C00')
         const background2 = canvas.setBackground('#FF')
@@ -105,12 +131,14 @@ describe('Тестирование canvas', () => {
     })
 
     it(`Добавление прямоугольника через addFigure`, () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage([])
+        const canvas = createCanvas(storage)
         const rectangle = createFigure('rectangle')
 
         canvas.addFigure(rectangle)
 
-        expect(canvas.getFigures()[0]).toEqual({
+        expect(storage.add.mock.calls.length).toBe(1)
+        expect(storage.add.mock.calls[0]).toEqual([{
             x: 0,
             y: 0,
             width: 100,
@@ -118,32 +146,36 @@ describe('Тестирование canvas', () => {
             color: '#FF00FF',
             rotate: 0,
             type: 'rectangle',
-        })
+        }])
     })
 
     it(`Добавление круга через addFigure`, () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage([])
+        const canvas = createCanvas(storage)
         const circle = createFigure('circle')
 
         canvas.addFigure(circle)
 
-        expect(canvas.getFigures()[0]).toEqual({
+        expect(storage.add.mock.calls.length).toBe(1)
+        expect(storage.add.mock.calls[0]).toEqual([{
             x: 0,
             y: 0,
             radius: 100,
             color: '#FF00FF',
             rotate: 0,
             type: 'circle',
-        })
+        }])
     })
 
     it(`Добавление треугольника через addFigure`, () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage([])
+        const canvas = createCanvas(storage)
         const triangle = createFigure('triangle')
 
         canvas.addFigure(triangle)
 
-        expect(canvas.getFigures()[0]).toEqual({
+        expect(storage.add.mock.calls.length).toBe(1)
+        expect(storage.add.mock.calls[0]).toEqual([{
             x: 0,
             y: 0,
             width: 100,
@@ -152,14 +184,19 @@ describe('Тестирование canvas', () => {
             color: '#FF00FF',
             rotate: 0,
             type: 'triangle',
-        })
+        }])
     })
 
     it(`Добавление нескольких фигур`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage([])
+        const canvas = createCanvas(storage)
 
-        expect(canvas.getFigureCount()).toBe(3)
-        expect(canvas.getFigures()[0]).toEqual({
+        canvas.addFigure(createFigure('rectangle'))
+        canvas.addFigure(createFigure('circle'))
+        canvas.addFigure(createFigure('triangle'))
+
+        expect(storage.add.mock.calls.length).toBe(3)
+        expect(storage.add.mock.calls[0]).toEqual([{
             x: 0,
             y: 0,
             width: 100,
@@ -167,16 +204,16 @@ describe('Тестирование canvas', () => {
             color: '#FF00FF',
             rotate: 0,
             type: 'rectangle',
-        })
-        expect(canvas.getFigures()[1]).toEqual({
+        }])
+        expect(storage.add.mock.calls[1]).toEqual([{
             x: 0,
             y: 0,
             radius: 100,
             color: '#FF00FF',
             rotate: 0,
             type: 'circle',
-        })
-        expect(canvas.getFigures()[2]).toEqual({
+        }])
+        expect(storage.add.mock.calls[2]).toEqual([{
             x: 0,
             y: 0,
             width: 100,
@@ -185,18 +222,20 @@ describe('Тестирование canvas', () => {
             color: '#FF00FF',
             rotate: 0,
             type: 'triangle',
-        })
+        }])
     })
 
     it(`Удаление одной фигуры`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']), [createFigure('rectangle')])
+        const canvas = createCanvas(storage)
 
-        const beforeCount = canvas.getFigureCount()
-        const figure = canvas.remove(0)
-        const afterCount = canvas.getFigureCount()
+        canvas.getFigureCount()
+        canvas.remove(0)
+        canvas.getFigureCount()
 
-        expect(beforeCount).toBe(3)
-        expect(figure).toEqual({
+        expect(storage.get.mock.calls.length).toBe(1)
+        expect(storage.get.mock.calls[0]).toEqual([0])
+        expect(storage.get.mock.results[0].value).toEqual({
             x: 0,
             y: 0,
             width: 100,
@@ -205,20 +244,35 @@ describe('Тестирование canvas', () => {
             rotate: 0,
             type: 'rectangle',
         })
-        expect(afterCount).toBe(2)
+
+        expect(storage.remove.mock.calls.length).toBe(1)
+        expect(storage.remove.mock.calls[0]).toEqual([0])
+
+        expect(storage.getCount.mock.calls.length).toBe(3)
+        expect(storage.getCount.mock.results[0].value).toBe(3)
+        expect(storage.getCount.mock.results[2].value).toBe(2)
     })
 
     it(`Удаление нескольких фигур`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(
+            createFigures(['rectangle', 'circle', 'triangle']),
+            [
+                createFigure('rectangle'),
+                createFigure('triangle'),
+            ],
+        )
+        const canvas = createCanvas(storage)
 
-        const firstCount = canvas.getFigureCount()
-        const figure1 = canvas.remove(0)
-        const secondCount = canvas.getFigureCount()
-        const figure2 = canvas.remove(1)
-        const thirdCount = canvas.getFigureCount()
+        canvas.getFigureCount()
+        canvas.remove(0)
+        canvas.getFigureCount()
+        canvas.remove(1)
+        canvas.getFigureCount()
 
-        expect(firstCount).toBe(3)
-        expect(figure1).toEqual({
+        expect(storage.get.mock.calls.length).toBe(2)
+        expect(storage.get.mock.calls[0]).toEqual([0])
+        expect(storage.get.mock.calls[1]).toEqual([1])
+        expect(storage.get.mock.results[0].value).toEqual({
             x: 0,
             y: 0,
             width: 100,
@@ -227,8 +281,7 @@ describe('Тестирование canvas', () => {
             rotate: 0,
             type: 'rectangle',
         })
-        expect(secondCount).toBe(2)
-        expect(figure2).toEqual({
+        expect(storage.get.mock.results[1].value).toEqual({
             x: 0,
             y: 0,
             width: 100,
@@ -238,78 +291,122 @@ describe('Тестирование canvas', () => {
             rotate: 0,
             type: 'triangle',
         })
-        expect(thirdCount).toBe(1)
+
+        expect(storage.remove.mock.calls.length).toBe(2)
+        expect(storage.remove.mock.calls[0]).toEqual([0])
+        expect(storage.remove.mock.calls[1]).toEqual([1])
+
+        expect(storage.getCount.mock.calls.length).toBe(5)
+        expect(storage.getCount.mock.results[0].value).toBe(3)
+        expect(storage.getCount.mock.results[2].value).toBe(2)
+        expect(storage.getCount.mock.results[4].value).toBe(1)
     })
 
     it(`Невалидный индекс при удаление фигуры`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
-        const bigIndexRemove = canvas.remove(3)
-        const smallIndexRemove = canvas.remove(-1)
+        canvas.remove(3)
+        canvas.remove(-1)
 
-        expect(bigIndexRemove).toBe(null)
-        expect(smallIndexRemove).toBe(null)
-        expect(canvas.getFigureCount()).toBe(3)
+        expect(storage.getCount.mock.calls.length).toBe(1)
+        expect(storage.getCount.mock.results[0].value).toBe(3)
+
+        expect(storage.get.mock.calls.length).toBe(0)
+        expect(storage.remove.mock.calls.length).toBe(0)
     })
 
     it(`Установка цвета определённой фигуры`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(
+            [
+                {
+                    ...createFigure('triangle'),
+                    color: '#00FFFF',
+                },
+                createFigure('circle'),
+                createFigure('triangle'),
+            ],
+            [
+                createFigure('rectangle'),
+            ]
+        )
+        const canvas = createCanvas(storage)
 
         const state = canvas.setColorForFigure('#00FFFF', 0)
 
+        expect(storage.get.mock.calls.length).toBe(1)
+        expect(storage.get.mock.calls[0]).toEqual([0])
+        expect(storage.get.mock.results[0].value).toEqual({
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100,
+            color: '#00FFFF',
+            rotate: 0,
+            type: 'rectangle',
+        })
         expect(state).toBe(true)
-        expect(canvas.getFigures().map(({color}) => color)).toEqual(['#00FFFF', '#FF00FF', '#FF00FF'])
     })
 
     it(`Невалидная установка цвета определённой фигуры`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
         const state = canvas.setColorForFigure('#00FFFFF', 0)
 
+        expect(storage.get.mock.calls.length).toBe(0)
         expect(state).toBe(false)
         expect(canvas.getFigures().map(({color}) => color)).toEqual(['#FF00FF', '#FF00FF', '#FF00FF'])
     })
 
     it(`Невалидный индекс при установке цвета определённой фигуры`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
         const state = canvas.setColorForFigure('#00FFFF', 3)
 
+        expect(storage.get.mock.calls.length).toBe(0)
         expect(state).toBe(false)
         expect(canvas.getFigures().map(({color}) => color)).toEqual(['#FF00FF', '#FF00FF', '#FF00FF'])
     })
 
     it(`Установка цвета фигурам`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
         const state = canvas.setColorForFigures('#00FFFF')
 
+        expect(storage.getAll.mock.calls.length).toBe(1)
+        expect(storage.getAll.mock.results[0].value.map(({color}) => color)).toEqual(['#00FFFF', '#00FFFF', '#00FFFF'])
         expect(state).toBe(true)
-        expect(canvas.getFigures().map(({color}) => color)).toEqual(['#00FFFF', '#00FFFF', '#00FFFF'])
     })
 
     it(`Невалидная установка цвета фигурам`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
         const state = canvas.setColorForFigures('#00FFFFF')
 
+        expect(storage.getAll.mock.calls.length).toBe(0)
         expect(state).toBe(false)
         expect(canvas.getFigures().map(({color}) => color)).toEqual(['#FF00FF', '#FF00FF', '#FF00FF'])
     })
 
     it(`Удаление фигур на пустом canvas`, () => {
-        const canvas = createCanvas()
+        const storage = createMockStorage([])
+        const canvas = createCanvas(storage)
 
         canvas.clearFigures()
 
-        expect(canvas.getFigureCount()).toBe(0)
+        expect(storage.clear.mock.calls.length).toBe(1)
     })
 
     it(`Удаление фигур на заполненом canvas`, () => {
-        const canvas = createCanvas(null, ['rectangle', 'circle', 'triangle'])
+        const storage = createMockStorage(createFigures(['rectangle', 'circle', 'triangle']))
+        const canvas = createCanvas(storage)
 
         canvas.clearFigures()
 
-        expect(canvas.getFigureCount()).toBe(0)
+        expect(storage.clear.mock.calls.length).toBe(1)
     })
 })

@@ -1,21 +1,22 @@
-import {Circle, Figure, Rectangle, Triangle} from "./figure";
+import {Circle, Figure, Rectangle, Triangle} from "./figure"
+import {Storage} from "./storage"
 
 const DEFAULT_COLOR = '#FFFFFF'
 
 class Canvas {
-    private figures: Figure[];
+    private figures: Storage;
     private background: string;
 
-    constructor(background: string = DEFAULT_COLOR) {
+    constructor(storage: Storage, background: string = DEFAULT_COLOR) {
         if (!this.validateHex(background)) {
             throw new Error('Invalid color')
         }
-        this.figures = []
+        this.figures = storage;
         this.background = background;
     }
 
     addFigure(figure: Rectangle | Circle | Triangle) {
-        this.figures.push(figure)
+        this.figures.add(figure)
     }
 
     setBackground(background: string): boolean {
@@ -31,28 +32,29 @@ class Canvas {
     }
 
     getFigures(): Figure[] {
-        return [...this.figures]
+        return this.figures.getAll()
     }
 
     getFigureCount(): number {
-        return this.figures.length
+        return this.figures.getCount()
     }
 
     remove(index: number): Figure | null {
-        if (index < 0 || this.figures.length <= index) {
+        if (index < 0 || this.figures.getCount() <= index) {
             return null
         }
 
-        const deleted = this.figures.splice(index, 1)
-        return deleted[0] || null
+        const deleted = this.figures.get(index)
+        this.figures.remove(index)
+        return deleted || null
     }
 
     setColorForFigure(color: string, index: number): boolean {
-        if (index < 0 || this.figures.length <= index || !this.validateHex(color)) {
+        if (index < 0 || this.figures.getCount() <= index || !this.validateHex(color)) {
             return false
         }
 
-        this.figures[index].color = color
+        this.figures.get(index).color = color
         return true
     }
 
@@ -61,12 +63,12 @@ class Canvas {
             return false
         }
 
-        this.figures.forEach(figure => figure.color = color)
+        this.figures.getAll().forEach(figure => figure.color = color)
         return true
     }
 
     clearFigures() {
-        this.figures = [];
+        this.figures.clear();
     }
 
     private validateHex(color: string) {
