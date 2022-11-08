@@ -233,18 +233,6 @@ describe('Тестирование canvas', () => {
         canvas.remove(0)
         canvas.getFigureCount()
 
-        expect(storage.get.mock.calls.length).toBe(1)
-        expect(storage.get.mock.calls[0]).toEqual([0])
-        expect(storage.get.mock.results[0].value).toEqual({
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100,
-            color: '#FF00FF',
-            rotate: 0,
-            type: 'rectangle',
-        })
-
         expect(storage.remove.mock.calls.length).toBe(1)
         expect(storage.remove.mock.calls[0]).toEqual([0])
 
@@ -268,29 +256,6 @@ describe('Тестирование canvas', () => {
         canvas.getFigureCount()
         canvas.remove(1)
         canvas.getFigureCount()
-
-        expect(storage.get.mock.calls.length).toBe(2)
-        expect(storage.get.mock.calls[0]).toEqual([0])
-        expect(storage.get.mock.calls[1]).toEqual([1])
-        expect(storage.get.mock.results[0].value).toEqual({
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100,
-            color: '#FF00FF',
-            rotate: 0,
-            type: 'rectangle',
-        })
-        expect(storage.get.mock.results[1].value).toEqual({
-            x: 0,
-            y: 0,
-            width: 100,
-            height: 100,
-            vertexOffset: 50,
-            color: '#FF00FF',
-            rotate: 0,
-            type: 'triangle',
-        })
 
         expect(storage.remove.mock.calls.length).toBe(2)
         expect(storage.remove.mock.calls[0]).toEqual([0])

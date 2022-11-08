@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1667575928053" clover="3.2.0">
-  <project timestamp="1667575928053" name="All files">
+<coverage generated="1667903807064" clover="3.2.0">
+  <project timestamp="1667903807064" name="All files">
     <metrics statements="29" coveredstatements="29" conditionals="13" coveredconditionals="12" methods="12" coveredmethods="12" elements="54" coveredelements="53" complexity="0" loc="29" ncloc="29" packages="1" files="1" classes="1"/>
     <file name="canvas.ts" path="C:\Volgatech\third_course\software_testing_and_debugging\lw\lw3\canvas.ts">
       <metrics statements="29" coveredstatements="29" conditionals="13" coveredconditionals="12" methods="12" coveredmethods="12"/>
