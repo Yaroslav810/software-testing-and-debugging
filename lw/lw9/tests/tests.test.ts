@@ -1,6 +1,15 @@
 import {actions} from "../api/actions";
 import {validators} from "../validators/validator";
-import {getInvalidProductForAdd, getInvalidProductForEdit, getProductForAdd, getProductForEdit} from "./mocks";
+import {
+    getInvalidCategoryIdProductForAdd,
+    getInvalidCategoryIdProductForEdit,
+    getInvalidHitProductForAdd,
+    getInvalidHitProductForEdit,
+    getInvalidProductForAdd,
+    getInvalidProductForEdit,
+    getProductForAdd,
+    getProductForEdit
+} from "./testData";
 import {path} from "../api/config";
 
 describe(`Testing ${path}`, () => {
@@ -82,6 +91,8 @@ describe(`Testing ${path}`, () => {
     })
 
     it('Добавление товара с невалидными данными', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
         const invalidAddProduct = await actions.addProduct(getInvalidProductForAdd())
         const addProductId = invalidAddProduct.id
 
@@ -90,7 +101,31 @@ describe(`Testing ${path}`, () => {
         expect(addProductId).toBeUndefined()
     })
 
+    it('Добавление товара с невалидной category_id', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
+        const invalidAddProduct = await actions.addProduct(getInvalidCategoryIdProductForAdd())
+        const addProductId = invalidAddProduct.id
+
+        expect(validators.validateInvalidAddProduct(invalidAddProduct)).toBe(true)
+        expect(invalidAddProduct.status).toBe(0)
+        expect(addProductId).toBeUndefined()
+    })
+
+    it('Добавление товара с невалидным hit', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
+        const invalidAddProduct = await actions.addProduct(getInvalidHitProductForAdd())
+        const addProductId = invalidAddProduct.id
+
+        expect(validators.validateInvalidAddProduct(invalidAddProduct)).toBe(true)
+        expect(invalidAddProduct.status).toBe(0)
+        expect(addProductId).toBeUndefined()
+    })
+
     it('Редактирование товара с невалидными данными', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
         const addProduct = await actions.addProduct(getProductForAdd())
         const addProductId = addProduct.id.toString()
         const editProduct = await actions.editProduct(getInvalidProductForEdit(addProductId))
@@ -116,7 +151,65 @@ describe(`Testing ${path}`, () => {
         })
     })
 
+    it('Редактирование товара с невалидной category_id', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
+        const addProduct = await actions.addProduct(getProductForAdd())
+        const addProductId = addProduct.id.toString()
+        const editProduct = await actions.editProduct(getInvalidCategoryIdProductForEdit(addProductId))
+        const products = await actions.getProducts()
+        const product = products.find(p => p.id === addProductId)
+        productsIds.push(addProduct.id)
+        const uncheckedFields = {
+            alias: undefined,
+            cat: undefined,
+            img: undefined,
+        }
+
+        expect(validators.validateEditProduct(editProduct)).toBe(true)
+        expect(editProduct.status).toBe(0)
+        expect(product).toBeTruthy()
+        expect({
+            ...getProductForAdd(),
+            ...uncheckedFields,
+            id: addProductId,
+        }).toEqual({
+            ...product,
+            ...uncheckedFields
+        })
+    })
+
+    it('Редактирование товара с невалидным hit', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
+        const addProduct = await actions.addProduct(getProductForAdd())
+        const addProductId = addProduct.id.toString()
+        const editProduct = await actions.editProduct(getInvalidHitProductForEdit(addProductId))
+        const products = await actions.getProducts()
+        const product = products.find(p => p.id === addProductId)
+        productsIds.push(addProduct.id)
+        const uncheckedFields = {
+            alias: undefined,
+            cat: undefined,
+            img: undefined,
+        }
+
+        expect(validators.validateEditProduct(editProduct)).toBe(true)
+        expect(editProduct.status).toBe(0)
+        expect(product).toBeTruthy()
+        expect({
+            ...getProductForAdd(),
+            ...uncheckedFields,
+            id: addProductId,
+        }).toEqual({
+            ...product,
+            ...uncheckedFields
+        })
+    })
+
     it('Редактирование несуществующего товара', async () => {
+        // Тест проваливается, так как api возвращает успешный статус
+        // Ожидается: 0, Получено: 1
         const addProduct = await actions.addProduct(getProductForAdd())
         const addProductId = addProduct.id.toString()
         await actions.deleteProduct(addProductId)
