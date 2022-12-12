@@ -26,7 +26,7 @@ describe(`Testing ${path}`, () => {
 
     it('Получение всех товаров', async () => {
         const data = await actions.getProducts()
-        expect(validators.validateProducts(data), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateProducts(data), 'Валидация данных провалена').toBe(true)
     })
 
     it('Добавление товара', async () => {
@@ -41,7 +41,7 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateAddProduct(addProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateAddProduct(addProduct), 'Валидация данных провалена').toBe(true)
         expect(addProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
         expect(product, 'Созданный товар не найден в списке всех товаров').toBeTruthy()
         expect({
@@ -67,7 +67,7 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных провалена').toBe(true)
         expect(editProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
         expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
@@ -86,7 +86,7 @@ describe(`Testing ${path}`, () => {
         const products = await actions.getProducts()
         const product = products.find(p => p.id === addProductId)
 
-        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных провалена').toBe(true)
         expect(deleteProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
         expect(product, 'В списке найден удалённый продукт').toBeUndefined()
     })
@@ -97,7 +97,7 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных провалена').toBe(true)
         expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
@@ -108,7 +108,7 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidCategoryIdProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных провалена').toBe(true)
         expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
@@ -119,7 +119,7 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidHitProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных провалена').toBe(true)
         expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
@@ -139,7 +139,7 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных провалена').toBe(true)
         expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
@@ -167,7 +167,7 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных провалена').toBe(true)
         expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
@@ -195,14 +195,14 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных провалена').toBe(true)
         expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
         expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }, 'Отредактированный товар не рваен возвращённому').toEqual({
+        }, 'Отредактированный товар не равен возвращённому').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -216,7 +216,7 @@ describe(`Testing ${path}`, () => {
         await actions.deleteProduct(addProductId)
         const editProduct = await actions.editProduct(getProductForEdit(addProductId))
 
-        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных провалена').toBe(true)
         expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
     })
 
@@ -226,7 +226,7 @@ describe(`Testing ${path}`, () => {
         await actions.deleteProduct(addProductId)
         const deleteProduct = await actions.deleteProduct(addProductId)
 
-        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных проввалена').toBe(true)
+        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных провалена').toBe(true)
         expect(deleteProduct.status, 'Пришёл успешный статус').toBe(0)
     })
 
@@ -252,7 +252,7 @@ describe(`Testing ${path}`, () => {
         const secondProductAlias = secondProduct.alias
         const thirdProductAlias = thirdProduct.alias
 
-        expect(secondProductAlias, 'Аллиас не совпадает с ожидающимся').toBe(`${firstProductAlias}-0`)
-        expect(thirdProductAlias, 'Аллиас не совпадает с ожидающимся').toBe(`${secondProductAlias}-0`)
+        expect(secondProductAlias, 'Алиас не совпадает с ожидающимся').toBe(`${firstProductAlias}-0`)
+        expect(thirdProductAlias, 'Алиас не совпадает с ожидающимся').toBe(`${secondProductAlias}-0`)
     })
 })
