@@ -252,7 +252,7 @@ describe(`Testing ${path}`, () => {
         const secondProductAlias = secondProduct.alias
         const thirdProductAlias = thirdProduct.alias
 
-        expect(secondProductAlias, 'Аллиас не совпадает с оижающимся').toBe(`${firstProductAlias}-0`)
-        expect(thirdProductAlias, 'Аллиас не совпадает с оижающимся').toBe(`${secondProductAlias}-0`)
+        expect(secondProductAlias, 'Аллиас не совпадает с ожидающимся').toBe(`${firstProductAlias}-0`)
+        expect(thirdProductAlias, 'Аллиас не совпадает с ожидающимся').toBe(`${secondProductAlias}-0`)
     })
 })
