@@ -1,3 +1,4 @@
+import 'jest-expect-message';
 import {actions} from "../api/actions";
 import {validators} from "../validators/validator";
 import {
@@ -25,7 +26,7 @@ describe(`Testing ${path}`, () => {
 
     it('Получение всех товаров', async () => {
         const data = await actions.getProducts()
-        expect(validators.validateProducts(data)).toBe(true)
+        expect(validators.validateProducts(data), 'Валидация данных проввалена').toBe(true)
     })
 
     it('Добавление товара', async () => {
@@ -40,14 +41,14 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateAddProduct(addProduct)).toBe(true)
-        expect(addProduct.status).toBe(1)
-        expect(product).toBeTruthy()
+        expect(validators.validateAddProduct(addProduct), 'Валидация данных проввалена').toBe(true)
+        expect(addProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
+        expect(product, 'Созданный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }).toEqual({
+        }, 'Созданный товар имеет другие данные по сравнению с возвращённым').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -66,13 +67,13 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct)).toBe(true)
-        expect(editProduct.status).toBe(1)
-        expect(product).toBeTruthy()
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(editProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
+        expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForEdit(addProductId),
             ...uncheckedFields,
-        }).toEqual({
+        }, 'Отредактированный товар имеет другие данные по сравнению с возвращённым').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -85,9 +86,9 @@ describe(`Testing ${path}`, () => {
         const products = await actions.getProducts()
         const product = products.find(p => p.id === addProductId)
 
-        expect(validators.validateDeleteProduct(deleteProduct)).toBe(true)
-        expect(deleteProduct.status).toBe(1)
-        expect(product).toBeUndefined()
+        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных проввалена').toBe(true)
+        expect(deleteProduct.status, 'Пришёл статус, сообщающий об ошибке').toBe(1)
+        expect(product, 'В списке найден удалённый продукт').toBeUndefined()
     })
 
     it('Добавление товара с невалидными данными', async () => {
@@ -96,9 +97,9 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct)).toBe(true)
-        expect(invalidAddProduct.status).toBe(0)
-        expect(addProductId).toBeUndefined()
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
 
     it('Добавление товара с невалидной category_id', async () => {
@@ -107,9 +108,9 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidCategoryIdProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct)).toBe(true)
-        expect(invalidAddProduct.status).toBe(0)
-        expect(addProductId).toBeUndefined()
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
 
     it('Добавление товара с невалидным hit', async () => {
@@ -118,9 +119,9 @@ describe(`Testing ${path}`, () => {
         const invalidAddProduct = await actions.addProduct(getInvalidHitProductForAdd())
         const addProductId = invalidAddProduct.id
 
-        expect(validators.validateInvalidAddProduct(invalidAddProduct)).toBe(true)
-        expect(invalidAddProduct.status).toBe(0)
-        expect(addProductId).toBeUndefined()
+        expect(validators.validateInvalidAddProduct(invalidAddProduct), 'Валидация данных проввалена').toBe(true)
+        expect(invalidAddProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(addProductId, 'Добавился невалидный товар').toBeUndefined()
     })
 
     it('Редактирование товара с невалидными данными', async () => {
@@ -138,14 +139,14 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct)).toBe(true)
-        expect(editProduct.status).toBe(0)
-        expect(product).toBeTruthy()
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }).toEqual({
+        }, 'Отредактированный товар имеет другие данные по сравнению с возвращённым').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -166,14 +167,14 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct)).toBe(true)
-        expect(editProduct.status).toBe(0)
-        expect(product).toBeTruthy()
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }).toEqual({
+        }, 'Отредактированный товар не совпадает с возвращённым').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -194,14 +195,14 @@ describe(`Testing ${path}`, () => {
             img: undefined,
         }
 
-        expect(validators.validateEditProduct(editProduct)).toBe(true)
-        expect(editProduct.status).toBe(0)
-        expect(product).toBeTruthy()
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
+        expect(product, 'Отредактированный товар не найден в списке всех товаров').toBeTruthy()
         expect({
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }).toEqual({
+        }, 'Отредактированный товар не рваен возвращённому').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -215,8 +216,8 @@ describe(`Testing ${path}`, () => {
         await actions.deleteProduct(addProductId)
         const editProduct = await actions.editProduct(getProductForEdit(addProductId))
 
-        expect(validators.validateEditProduct(editProduct)).toBe(true)
-        expect(editProduct.status).toBe(0)
+        expect(validators.validateEditProduct(editProduct), 'Валидация данных проввалена').toBe(true)
+        expect(editProduct.status, 'Пришёл успешный статус').toBe(0)
     })
 
     it('Удаление несуществующего товара', async () => {
@@ -225,8 +226,8 @@ describe(`Testing ${path}`, () => {
         await actions.deleteProduct(addProductId)
         const deleteProduct = await actions.deleteProduct(addProductId)
 
-        expect(validators.validateDeleteProduct(deleteProduct)).toBe(true)
-        expect(deleteProduct.status).toBe(0)
+        expect(validators.validateDeleteProduct(deleteProduct), 'Валидация данных проввалена').toBe(true)
+        expect(deleteProduct.status, 'Пришёл успешный статус').toBe(0)
     })
 
     it('Генерация alias', async () => {
@@ -251,7 +252,7 @@ describe(`Testing ${path}`, () => {
         const secondProductAlias = secondProduct.alias
         const thirdProductAlias = thirdProduct.alias
 
-        expect(secondProductAlias).toBe(`${firstProductAlias}-0`)
-        expect(thirdProductAlias).toBe(`${secondProductAlias}-0`)
+        expect(secondProductAlias, 'Аллиас не совпадает с оижающимся').toBe(`${firstProductAlias}-0`)
+        expect(thirdProductAlias, 'Аллиас не совпадает с оижающимся').toBe(`${secondProductAlias}-0`)
     })
 })
