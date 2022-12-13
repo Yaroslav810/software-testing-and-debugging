@@ -12,6 +12,7 @@ import {
     getProductForEdit
 } from "./testData";
 import {path} from "../api/config";
+import urlSlug from 'url-slug';
 
 describe(`Testing ${path}`, () => {
     jest.setTimeout(100000)
@@ -48,7 +49,7 @@ describe(`Testing ${path}`, () => {
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }, 'Созданный товар имеет другие данные по сравнению с возвращённым').toEqual({
+        }, 'Созданный товар отличается от ожидаемого').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -73,7 +74,7 @@ describe(`Testing ${path}`, () => {
         expect({
             ...getProductForEdit(addProductId),
             ...uncheckedFields,
-        }, 'Отредактированный товар имеет другие данные по сравнению с возвращённым').toEqual({
+        }, 'Отредактированный товар отличается от ожидаемого').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -146,7 +147,7 @@ describe(`Testing ${path}`, () => {
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }, 'Отредактированный товар имеет другие данные по сравнению с возвращённым').toEqual({
+        }, 'Отредактированный товар отличается от ожидаемого').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -174,7 +175,7 @@ describe(`Testing ${path}`, () => {
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }, 'Отредактированный товар не совпадает с возвращённым').toEqual({
+        }, 'Отредактированный товар отличается от ожидаемого').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -202,7 +203,7 @@ describe(`Testing ${path}`, () => {
             ...getProductForAdd(),
             ...uncheckedFields,
             id: addProductId,
-        }, 'Отредактированный товар не равен возвращённому').toEqual({
+        }, 'Отредактированный товар отличается от ожидаемого').toEqual({
             ...product,
             ...uncheckedFields
         })
@@ -230,7 +231,7 @@ describe(`Testing ${path}`, () => {
         expect(deleteProduct.status, 'Пришёл успешный статус').toBe(0)
     })
 
-    it('Генерация alias', async () => {
+    it('Генерация alias при добавлении', async () => {
         const firstAddProduct = await actions.addProduct(getProductForAdd())
         const secondAddProduct = await actions.addProduct(getProductForAdd())
         const thirdAddProduct = await actions.addProduct(getProductForAdd())
@@ -252,7 +253,40 @@ describe(`Testing ${path}`, () => {
         const secondProductAlias = secondProduct.alias
         const thirdProductAlias = thirdProduct.alias
 
-        expect(secondProductAlias, 'Алиас не совпадает с ожидающимся').toBe(`${firstProductAlias}-0`)
-        expect(thirdProductAlias, 'Алиас не совпадает с ожидающимся').toBe(`${secondProductAlias}-0`)
+        console.log(firstProductAlias)
+        console.log(secondProductAlias)
+        console.log(thirdProductAlias)
+
+        expect(secondProductAlias, 'Первый алиас не совпадает с ожидаемым').toBe(`${firstProductAlias}-0`)
+        expect(thirdProductAlias, 'Второй алиас не совпадает с ожидаемым').toBe(`${secondProductAlias}-0`)
+    })
+
+    it('Генерация alias при редактировании', async () => {
+        const firstAddProduct = await actions.addProduct(getProductForAdd())
+        const secondAddProduct = await actions.addProduct(getProductForAdd())
+        const thirdAddProduct = await actions.addProduct(getProductForAdd())
+
+        const firstAddProductId = firstAddProduct.id.toString()
+        const secondAddProductId = secondAddProduct.id.toString()
+        const thirdAddProductId = thirdAddProduct.id.toString()
+
+        await actions.editProduct(getProductForEdit(firstAddProductId))
+        await actions.editProduct(getProductForEdit(secondAddProductId))
+        await actions.editProduct(getProductForEdit(thirdAddProductId))
+
+        productsIds.push(firstAddProductId)
+        productsIds.push(secondAddProductId)
+        productsIds.push(thirdAddProductId)
+
+        const products = await actions.getProducts()
+        const firstProduct = products.find(p => p.id === firstAddProductId)
+        const secondProduct = products.find(p => p.id === secondAddProductId)
+        const thirdProduct = products.find(p => p.id === thirdAddProductId)
+
+        const secondProductAlias = secondProduct.alias
+        const thirdProductAlias = thirdProduct.alias
+
+        expect(secondProductAlias, 'Алиас не совпадает с ожидаемым').toBe(urlSlug(firstProduct.title) + '-' + secondProduct.id)
+        expect(thirdProductAlias, 'Алиас не совпадает с ожидаемым').toBe(urlSlug(secondProduct.title) + '-' + thirdProduct.id)
     })
 })
