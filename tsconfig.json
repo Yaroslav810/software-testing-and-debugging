@@ -4,11 +4,15 @@
     "target": "es6",
     "sourceMap": true,
     "rootDir": "lw",
-    "outFile": "./dist/build.js",
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "types": [
+      "cypress"
+    ]
   },
   "exclude": [
     "node_modules"
   ],
-  "files": ["node_modules/jest-expect-message/types/index.d.ts"],
+  "files": [
+    "node_modules/jest-expect-message/types/index.d.ts"
+  ]
 }
